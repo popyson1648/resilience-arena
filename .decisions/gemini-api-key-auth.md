@@ -10,7 +10,7 @@ Call Gemini with an API key instead of Vertex AI ADC
 
 ## Status
 
-accepted
+superseded
 
 ## Decision
 
@@ -43,4 +43,4 @@ Revisit if the project moves to organization-managed GCP credentials or needs Ve
 
 ## Related
 
-`.plans/resilience-arena-mvp.md`
+Superseded by [vertex-ai-auth](vertex-ai-auth.md). `.plans/resilience-arena-mvp.md`

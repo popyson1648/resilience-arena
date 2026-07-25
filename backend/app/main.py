@@ -15,7 +15,8 @@ def create_app(run_manager: RunManager | None = None) -> FastAPI:
     app.state.run_manager = run_manager or RunManager()
     app.include_router(router)
 
-    @app.get("/healthz")
+    # /healthz is reserved by the Google Front End on run.app domains; keep it under /api
+    @app.get("/api/healthz")
     def healthz() -> dict:
         return {"ok": True}
 

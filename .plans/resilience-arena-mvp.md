@@ -2,7 +2,7 @@
 
 ## Status
 
-in-progress
+done
 
 ## Date
 
@@ -21,16 +21,20 @@ process visualized in real time on a single screen. Source requirements: `.tmp/r
 
 ## Success Criteria
 
-- [ ] Criterion 1: `python3 scripts/verify.py` passes with lint, format, typecheck, unit tests, and
-      frontend build enabled.
-- [ ] Criterion 2: A demo run completes locally: fault injection → agent investigation via tools →
+- [x] Criterion 1: `python3 scripts/verify.py` passes with lint, format, typecheck, unit tests, and
+      frontend build enabled. (Evidence: all phases green, final run 2026-07-25.)
+- [x] Criterion 2: A demo run completes locally: fault injection → agent investigation via tools →
       rollback → health verification → recovered state, driven by runtime Gemini decisions.
-- [ ] Criterion 3: The single-screen UI (SmartHR UI) shows system state, agent activity, and result
-      simultaneously; states are distinguishable without relying on color alone.
-- [ ] Criterion 4: Wrong rollback targets do not lead to a success verdict; rollback without
-      observed evidence is blocked and counted.
-- [ ] Criterion 5: The app runs on Cloud Run at a public URL without login, with the API key kept
-      server-side (Secret Manager).
+      (Evidence: local Vertex run RECOVERED in 21.1s, 6 tool calls.)
+- [x] Criterion 3: The single-screen UI (SmartHR UI) shows system state, agent activity, and result
+      simultaneously; states are distinguishable without relying on color alone (icons + labels).
+      (Evidence: Chrome E2E screenshots, a11y snapshot.)
+- [x] Criterion 4: Wrong rollback targets do not lead to a success verdict; rollback without
+      observed evidence is blocked and counted. (Evidence: pytest
+      test_wrong_rollback_target_fails_run, test_premature_rollback_is_blocked_then_recovers.)
+- [x] Criterion 5: The app runs on Cloud Run at a public URL without login; Gemini is called via
+      Vertex AI with the service-account identity, no credentials reach the browser.
+      (Evidence: https://resilience-arena-qxieomr5ba-an.a.run.app full-demo E2E, console clean.)
 
 ## Scope
 
@@ -47,9 +51,11 @@ process visualized in real time on a single screen. Source requirements: `.tmp/r
 
 ## Assumptions
 
-- Gemini API key auth (`GOOGLE_API_KEY`, `GOOGLE_GENAI_USE_VERTEXAI=FALSE`); user supplies the key.
+- Gemini via Vertex AI (`GOOGLE_GENAI_USE_VERTEXAI=TRUE`), ADC locally, service account on
+  Cloud Run. (Changed from API key on 2026-07-25: the key path now requires manual AI Studio
+  prepaid credits; user approved the switch. See `.decisions/vertex-ai-auth.md`.)
 - Default model `gemini-3.5-flash`, overridable via `GEMINI_MODEL`.
-- User links billing to the new GCP project and issues the API key (browser steps).
+- GCP project `resilience-arena-0725-15726`, billing linked with user approval (2026-07-25).
 
 ## Stop Conditions
 
@@ -78,27 +84,31 @@ process visualized in real time on a single screen. Source requirements: `.tmp/r
 ## Progress
 
 - [x] Phase 1: scaffold + simulation engine
-- [~] Phase 2: ADK agent + API (implementation and tests done; real-Gemini smoke pending API key)
+- [x] Phase 2: ADK agent + API (real-Gemini smoke passed locally via Vertex on 2026-07-25)
 - [x] Phase 3: frontend UI (verified in Chrome via scripted event source: full run, reset, re-run,
       error path, console clean)
-- [ ] Phase 4: integration + Cloud Run deploy
+- [x] Phase 4: integration + Cloud Run deploy (public URL live, full-demo E2E passed twice)
 
 ## Loop State
 
-- Current cycle: 2 (Phase 2 done, entering Phase 3)
-- Last material observation: 28 backend tests pass; verify.py green; no-key run correctly ends in
-  execution_error with generic client message (real cause only in server log).
-- Next action: build the single-screen frontend against the SSE API.
+- Current cycle: 5 (complete)
+- Last material observation: v3 (healthz path fix + favicon) live on Cloud Run; public-URL
+  full-demo E2E passed (18.1s, RECOVERED) with zero console messages.
+- Next action: none — task complete. Follow-ups: README/screenshots/slides deliverables,
+  optional gitleaks secrets phase.
 - Consecutive cycles without material progress: 0
-- Stop or escalation reason: none. Real-Gemini smoke deferred until the user provides the API key.
+- Stop or escalation reason: success
 
 ## Verification
 
-- [ ] `python3 scripts/verify.py`: lint, format, typecheck, test_unit, build phases pass
-- [ ] `cd backend && python3 -m pytest`: engine determinism, wrong-rollback invariance, guardrails
-- [ ] Phase 2: `curl -N localhost:8000/api/runs/{id}/events` shows state transitions and tool calls
-- [ ] Phase 3: Chrome DevTools MCP screenshot + console + network checks
-- [ ] Phase 4: full demo on the public Cloud Run URL, repeated runs and reset
+- [x] `python3 scripts/verify.py`: lint, format, typecheck, test_unit (28 tests), build — all green
+- [x] `cd backend && .venv/bin/python -m pytest`: engine determinism, wrong-rollback invariance,
+      guardrails, orchestrator states, API/SSE
+- [x] Phase 2: run snapshot API shows full state transitions and tool-call sequence (local Vertex
+      run 1aae8498957d: RECOVERED, 21.1s)
+- [x] Phase 3: Chrome DevTools MCP — screenshots (idle/running/final), a11y snapshot, console clean
+- [x] Phase 4: public Cloud Run URL full demo twice (14.8s and 18.1s, RECOVERED), reset and re-run
+      verified, no console messages, /api/healthz OK
 
 ## Open Issues
 

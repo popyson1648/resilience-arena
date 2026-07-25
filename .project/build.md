@@ -4,7 +4,9 @@
 
 - Python 3.12+ (3.13 recommended)
 - Node.js 24+ / npm 11+
-- A Gemini API key in `backend/.env` (`GOOGLE_API_KEY=...`); never commit it
+- Gemini access via Vertex AI: gcloud ADC locally (`gcloud auth application-default login`) and
+  `backend/.env` with `GOOGLE_GENAI_USE_VERTEXAI=TRUE`, `GOOGLE_CLOUD_PROJECT=<project>`,
+  `GOOGLE_CLOUD_LOCATION=global`; never commit `.env`
 
 ## Setup
 
