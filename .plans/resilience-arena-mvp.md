@@ -79,7 +79,8 @@ process visualized in real time on a single screen. Source requirements: `.tmp/r
 
 - [x] Phase 1: scaffold + simulation engine
 - [~] Phase 2: ADK agent + API (implementation and tests done; real-Gemini smoke pending API key)
-- [ ] Phase 3: frontend UI
+- [x] Phase 3: frontend UI (verified in Chrome via scripted event source: full run, reset, re-run,
+      error path, console clean)
 - [ ] Phase 4: integration + Cloud Run deploy
 
 ## Loop State

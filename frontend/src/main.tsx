@@ -1,7 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { IntlProvider } from 'react-intl'
-import { createTheme } from 'smarthr-ui'
+import { IntlProvider, createTheme } from 'smarthr-ui'
 import { ThemeProvider } from 'styled-components'
 import 'smarthr-ui/smarthr-ui.css'
 
