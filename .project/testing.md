@@ -2,9 +2,22 @@
 
 ## Test Types
 
+- Backend unit tests: pytest under `backend/tests/` (simulation engine determinism and invariants,
+  guardrails, run-state transitions, API via `fastapi.testclient` with a scripted fake event
+  source — no real Gemini calls in CI).
+- Frontend static checks: `tsc --noEmit` (typecheck phase) and ESLint (lint phase).
+- Manual integration: a real-Gemini smoke run locally, and browser verification via the
+  chrome-devtools MCP tools for UI changes.
+
 ## Minimum Checks Before Completion
 
+- `python3 scripts/verify.py` passes (format, lint, typecheck, build, test_unit).
+
 ## Checks By Change Type
+
+- `backend/app/simulation/**`: pytest; keep determinism tests passing.
+- `backend/app/agent/**` or `backend/app/run/**`: pytest plus a local real-Gemini smoke run.
+- `frontend/**`: typecheck + lint + build, and chrome-devtools MCP verification for visible changes.
 
 ## How To Run Verification
 
