@@ -77,19 +77,19 @@ process visualized in real time on a single screen. Source requirements: `.tmp/r
 
 ## Progress
 
-- [~] Phase 1: scaffold + simulation engine
-- [ ] Phase 2: ADK agent + API
+- [x] Phase 1: scaffold + simulation engine
+- [~] Phase 2: ADK agent + API (implementation and tests done; real-Gemini smoke pending API key)
 - [ ] Phase 3: frontend UI
 - [ ] Phase 4: integration + Cloud Run deploy
 
 ## Loop State
 
-- Current cycle: 1 (Phase 1)
-- Last material observation: plan approved; branch created; smarthr-ui 98.1.1 / google-adk 2.5.0
-  facts verified against npm/PyPI/source.
-- Next action: scaffold backend package and simulation engine with tests.
+- Current cycle: 2 (Phase 2 done, entering Phase 3)
+- Last material observation: 28 backend tests pass; verify.py green; no-key run correctly ends in
+  execution_error with generic client message (real cause only in server log).
+- Next action: build the single-screen frontend against the SSE API.
 - Consecutive cycles without material progress: 0
-- Stop or escalation reason: none
+- Stop or escalation reason: none. Real-Gemini smoke deferred until the user provides the API key.
 
 ## Verification
 
