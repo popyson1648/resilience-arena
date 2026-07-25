@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Resilience Arena — Presentation</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/line-seed-jp@5.3.0/400.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/line-seed-jp@5.3.0/700.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/line-seed-jp@5.3.0/800.css" />
+<style>
+  :root {
+    --ink: #0b0f14;
+    --panel: #121a24;
+    --line: #263140;
+    --text: #edf2f6;
+    --muted: #93a3b2;
+    --teal: #2bd9c0;
+    --violet: #8b7cf6;
+    --red: #ff5d6c;
+    --amber: #dfa63b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: var(--ink);
+    color: var(--text);
+    font-family: 'LINE Seed JP', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+    font-weight: 400;
+  }
+
+  html { scroll-snap-type: y mandatory; }
+
+  .slide {
+    width: 100vw;
+    height: 100vh;
+    scroll-snap-align: start;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  /* 1280x720 の設計座標。1em = 設計上の16px 相当にスケールする */
+  .stage {
+    font-size: calc(min(100vw, 177.7778vh) / 80);
+    width: 80em;
+    height: 45em;
+    position: relative;
+    padding: 4.25em 4.5em 3.5em;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .kicker {
+    font-weight: 800;
+    font-size: 0.8125em;
+    letter-spacing: 0.42em;
+    color: var(--teal);
+    margin-bottom: 1.6em;
+  }
+  .kicker .no { color: var(--muted); margin-right: 1.2em; }
+
+  h1 {
+    font-weight: 800;
+    font-size: 3.1em;
+    line-height: 1.32;
+    letter-spacing: 0.01em;
+  }
+  h1 em { font-style: normal; color: var(--teal); }
+
+  .lead {
+    color: var(--muted);
+    font-size: 1.22em;
+    line-height: 1.9;
+    margin-top: 1.2em;
+    max-width: 44em;
+  }
+  .lead strong { color: var(--text); font-weight: 700; }
+
+  .foot {
+    position: absolute;
+    left: 4.5em;
+    right: 4.5em;
+    bottom: 1.9em;
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 0.72em;
+    letter-spacing: 0.14em;
+    border-top: 1px solid var(--line);
+    padding-top: 1.35em;
+  }
+
+  .grow { flex: 1; min-height: 0; }
+
+  /* ---------- title ---------- */
+  .title-stage { justify-content: center; }
+  .title-mark {
+    display: flex; align-items: center; gap: 1em;
+    color: var(--muted); font-weight: 700; font-size: 0.95em; letter-spacing: 0.3em;
+    margin-bottom: 2.4em;
+  }
+  .title-mark::before { content: ""; width: 2.6em; height: 2px; background: var(--teal); }
+  .title-h {
+    font-weight: 800;
+    font-size: 5.1em;
+    line-height: 1.14;
+    letter-spacing: 0.005em;
+  }
+  .title-h .thin { font-weight: 400; color: var(--muted); }
+  .title-sub {
+    margin-top: 1.9em;
+    font-size: 1.35em;
+    line-height: 1.9;
+    color: var(--text);
+  }
+  .title-sub .dim { color: var(--muted); }
+  .title-meta { margin-top: 2.8em; color: var(--muted); font-size: 0.95em; letter-spacing: 0.12em; line-height: 2; }
+  .title-art { position: absolute; right: 4.5em; top: 8.2em; width: 21em; opacity: 0.9; }
+
+  /* ---------- generic columns ---------- */
+  .cols { display: grid; gap: 2em; margin-top: 2.6em; }
+  .cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .col {
+    border-top: 3px solid var(--teal);
+    padding-top: 1.4em;
+  }
+  .col.violet { border-top-color: var(--violet); }
+  .col.red { border-top-color: var(--red); }
+  .col h3 { font-weight: 800; font-size: 1.35em; margin-bottom: 0.75em; letter-spacing: 0.02em; }
+  .col p { color: var(--muted); font-size: 0.98em; line-height: 1.95; }
+  .col p strong { color: var(--text); font-weight: 700; }
+
+  /* ---------- problem slide ---------- */
+  .problem-grid { display: grid; grid-template-columns: 7fr 6fr; gap: 4em; margin-top: 2.4em; align-items: start; }
+  .fail-list { list-style: none; }
+  .fail-list li {
+    display: flex; gap: 1em; align-items: baseline;
+    padding: 0.78em 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 1.06em; line-height: 1.6;
+  }
+  .fail-list li::before { content: "✕"; color: var(--red); font-weight: 800; font-size: 0.85em; }
+  .verdict {
+    border-left: 3px solid var(--red);
+    padding-left: 1.6em;
+  }
+  .verdict .big {
+    font-weight: 800; font-size: 1.95em; line-height: 1.6;
+  }
+  .verdict .big em { font-style: normal; color: var(--red); }
+  .verdict p { margin-top: 1.2em; color: var(--muted); line-height: 2; font-size: 1em; }
+
+  /* ---------- experience slide ---------- */
+  .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2em; margin-top: 2.2em; }
+  .stat { border-top: 3px solid var(--teal); padding-top: 1.1em; }
+  .stat .n { font-weight: 800; font-size: 4.6em; line-height: 1.1; letter-spacing: 0.01em; }
+  .stat .n small { font-size: 0.42em; font-weight: 700; color: var(--muted); margin-left: 0.15em; }
+  .stat .l { margin-top: 0.5em; color: var(--muted); font-size: 0.98em; line-height: 1.8; }
+  .flowline { margin-top: 3em; }
+
+  /* ---------- svg 共通 ---------- */
+  svg text { font-family: 'LINE Seed JP', sans-serif; }
+  .fig { width: 100%; height: auto; display: block; }
+
+  /* ---------- comparison ---------- */
+  .cmp { display: grid; grid-template-columns: 8.5em 1fr 1fr; margin-top: 2.4em; font-size: 0.98em; }
+  .cmp > div { padding: 1.15em 1.3em; border-bottom: 1px solid var(--line); line-height: 1.75; }
+  .cmp .h { font-weight: 800; font-size: 1.05em; border-bottom: 2px solid var(--line); }
+  .cmp .h.ours { color: var(--teal); }
+  .cmp .k { color: var(--muted); font-weight: 700; font-size: 0.85em; letter-spacing: 0.1em; padding-left: 0; }
+  .cmp .them { color: var(--muted); }
+  .cmp .ours { position: relative; }
+  .cmp .ours strong { color: var(--text); font-weight: 700; }
+  .cmp-wrap { position: relative; }
+  .cmp-hl {
+    position: absolute; top: 0; bottom: 0;
+    left: calc(8.5em + (100% - 8.5em) / 2);
+    right: 0;
+    border: 2px solid var(--teal);
+    pointer-events: none;
+  }
+
+  /* ---------- roadmap ---------- */
+  .road { display: grid; grid-template-columns: 1fr 0.5em 1fr 0.5em 1fr; gap: 1.6em; margin-top: 2.8em; align-items: stretch; }
+  .phase { border: 1px solid var(--line); background: var(--panel); padding: 1.7em 1.8em; }
+  .phase.now { border-color: var(--teal); }
+  .phase .tag { font-weight: 800; font-size: 0.8em; letter-spacing: 0.3em; color: var(--muted); }
+  .phase.now .tag { color: var(--teal); }
+  .phase h3 { font-weight: 800; font-size: 1.4em; margin: 0.7em 0 0.8em; }
+  .phase p { color: var(--muted); font-size: 0.95em; line-height: 1.95; }
+  .road-arrow { display: grid; place-items: center; color: var(--muted); font-size: 1.4em; }
+
+  /* ---------- closing ---------- */
+  .close-stage { justify-content: center; align-items: flex-start; }
+  .close-h { font-weight: 800; font-size: 3.6em; line-height: 1.4; }
+  .close-h em { font-style: normal; color: var(--teal); }
+  .close-url {
+    margin-top: 1.6em;
+    font-weight: 700;
+    font-size: 1.62em;
+    letter-spacing: 0.015em;
+    color: var(--teal);
+    border: 1px solid var(--line);
+    background: var(--panel);
+    padding: 0.9em 1.4em;
+  }
+  .close-note { margin-top: 2.2em; color: var(--muted); font-size: 1.05em; line-height: 2; }
+
+  .pageno { font-variant-numeric: tabular-nums; }
+
+  @media print {
+    html { scroll-snap-type: none; }
+    .slide { page-break-after: always; height: 100vh; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 1. タイトル -->
+<section class="slide">
+  <div class="stage title-stage">
+    <svg class="title-art" viewBox="0 0 336 190" aria-hidden="true">
+      <polyline points="0,150 96,150 112,44 128,60 144,36 160,58 176,40 192,150 336,150"
+                fill="none" stroke="var(--red)" stroke-width="3" opacity="0.85" />
+      <polyline points="192,150 336,150" fill="none" stroke="var(--teal)" stroke-width="4" />
+      <line x1="96" y1="16" x2="96" y2="166" stroke="var(--violet)" stroke-width="2" stroke-dasharray="6 5" />
+      <circle cx="192" cy="150" r="6" fill="var(--teal)" />
+      <text x="96" y="184" text-anchor="middle" font-size="11" fill="var(--violet)">デプロイ</text>
+      <text x="264" y="140" text-anchor="middle" font-size="11" fill="var(--teal)">復旧</text>
+    </svg>
+    <div class="title-mark">GOOGLE AI DOJO 2026 — SEASON 2</div>
+    <div class="title-h">Resilience<br />Arena</div>
+    <div class="title-sub">
+      AIエージェントの障害対応を、<span class="dim">その過程まで</span>見る。<br />
+      <span class="dim">調査・復旧・検証をリアルタイムに可視化する障害対応シミュレーター</span>
+    </div>
+    <div class="title-meta">
+      Gemini × Agent Development Kit × Cloud Run<br />
+      Google Cloud Next Tokyo 2026 デモ候補
+    </div>
+    <div class="foot"><span>Resilience Arena</span><span class="pageno">01</span></div>
+  </div>
+</section>
+
+<!-- 2. 問題 -->
+<section class="slide">
+  <div class="stage">
+    <div class="kicker"><span class="no">01</span>問題</div>
+    <h1>回答は正しい。<br />では、<em>手は正しく動くか。</em></h1>
+    <div class="problem-grid grow">
+      <div>
+        <ul class="fail-list">
+          <li>メトリクスを確認せずに原因を断定する</li>
+          <li>直前のデプロイとの関係を調査しない</li>
+          <li>根拠が不十分なまま復旧操作を実行する</li>
+          <li>復旧したかどうかを検証せずに完了と報告する</li>
+          <li>許可されていない操作を試みる</li>
+        </ul>
+      </div>
+      <div class="verdict">
+        <div class="big">既存の評価は<br /><em>最終回答の正しさ</em>しか<br />見ていない。</div>
+        <p>AIエージェントをクラウド運用に導入するには、ツールの選択・操作の順番・検証の有無という「実行過程」の評価が必要になる。</p>
+      </div>
+    </div>
+    <div class="foot"><span>Resilience Arena</span><span class="pageno">02</span></div>
+  </div>
+</section>
+
+<!-- 3. 中心体験 -->
+<section class="slide">
+  <div class="stage">
+    <div class="kicker"><span class="no">02</span>中心体験</div>
+    <h1>ワンクリックで障害が起き、<br />AIが直すまでを <em>1画面</em> で見届ける。</h1>
+    <div class="grow">
+      <div class="stats">
+        <div class="stat">
+          <div class="n">1<small>画面</small></div>
+          <div class="l">システム状態・エージェントの調査・対応結果を同時に表示。チャットUIではない。</div>
+        </div>
+        <div class="stat">
+          <div class="n">6<small>ツール実行</small></div>
+          <div class="l">正常性確認・メトリクス・デプロイ履歴・ログ・ロールバック・再検証。すべて実際のツール呼び出し。</div>
+        </div>
+        <div class="stat">
+          <div class="n">18.1<small>秒</small></div>
+          <div class="l">障害発生から復旧完了までの実測値(公開環境)。会場デモとして繰り返し再現できる。</div>
+        </div>
+      </div>
+      <svg class="fig flowline" viewBox="0 0 1136 96" aria-label="デモの流れ">
+        <line x1="8" y1="34" x2="1128" y2="34" stroke="var(--line)" stroke-width="2" />
+        <g font-size="15" fill="var(--text)" text-anchor="middle" font-weight="700">
+          <circle cx="60" cy="34" r="7" fill="var(--muted)" /><text x="60" y="74">デモ開始</text>
+          <circle cx="272" cy="34" r="7" fill="var(--red)" /><text x="272" y="74" fill="var(--red)">障害発生</text>
+          <circle cx="484" cy="34" r="7" fill="var(--violet)" /><text x="484" y="74">AIが調査</text>
+          <circle cx="696" cy="34" r="7" fill="var(--violet)" /><text x="696" y="74">復旧操作</text>
+          <circle cx="908" cy="34" r="7" fill="var(--violet)" /><text x="908" y="74">検証</text>
+          <circle cx="1090" cy="34" r="7" fill="var(--teal)" /><text x="1090" y="74" fill="var(--teal)">復旧完了</text>
+        </g>
+      </svg>
+    </div>
+    <div class="foot"><span>Resilience Arena</span><span class="pageno">03</span></div>
+  </div>
+</section>
+
+<!-- 4. デモ -->
+<section class="slide">
+  <div class="stage">
+    <div class="kicker"><span class="no">03</span>デモ — 障害発生から復旧まで</div>
+    <h1 style="font-size: 2.5em;">不正なデプロイを、<em>観測の突き合わせ</em>で特定して巻き戻す。</h1>
+    <div class="grow" style="margin-top: 1.4em;">
+      <svg class="fig" viewBox="0 0 1136 372" aria-label="エラー率の推移とエージェントの行動">
+        <!-- エラー率カーブ -->
+        <g>
+          <line x1="40" y1="40"  x2="1128" y2="40"  stroke="var(--line)" stroke-width="1" />
+          <line x1="40" y1="110" x2="1128" y2="110" stroke="var(--line)" stroke-width="1" />
+          <line x1="40" y1="180" x2="1128" y2="180" stroke="var(--line)" stroke-width="1" />
+          <text x="30" y="45"  font-size="13" fill="var(--muted)" text-anchor="end">40%</text>
+          <text x="30" y="115" font-size="13" fill="var(--muted)" text-anchor="end">20%</text>
+          <text x="30" y="185" font-size="13" fill="var(--muted)" text-anchor="end">0%</text>
+
+          <line x1="360" y1="16" x2="360" y2="180" stroke="var(--violet)" stroke-width="2" stroke-dasharray="7 6" />
+          <text x="372" y="28" font-size="14" font-weight="700" fill="var(--violet)">rev-002 デプロイ(10:31)</text>
+
+          <polyline
+            points="40,178 200,177 320,178 360,178 380,52 440,46 500,55 560,44 620,52 680,46 740,54 800,47 860,52 900,178 1128,177"
+            fill="none" stroke="var(--red)" stroke-width="3" />
+          <polyline points="900,178 1128,177" fill="none" stroke="var(--teal)" stroke-width="4" />
+          <circle cx="900" cy="178" r="6" fill="var(--teal)" />
+
+          <text x="150" y="164" font-size="14" fill="var(--muted)">エラー率 0.4%</text>
+          <text x="630" y="30" font-size="15" font-weight="800" fill="var(--red)">41.7%</text>
+          <text x="1014" y="162" font-size="14" font-weight="700" fill="var(--teal)">0.4% に回復</text>
+          <text x="884" y="206" font-size="13" fill="var(--teal)">rev-001 へ切替(10:41)</text>
+        </g>
+
+        <!-- エージェントの行動タイムライン -->
+        <g>
+          <line x1="40" y1="268" x2="1128" y2="268" stroke="var(--line)" stroke-width="2" />
+          <g font-size="14" text-anchor="middle">
+            <circle cx="120" cy="268" r="6" fill="var(--violet)" />
+            <text x="120" y="298" fill="var(--text)" font-weight="700">check_health</text>
+            <text x="120" y="320" fill="var(--muted)" font-size="12.5">全体像の把握</text>
+
+            <circle cx="330" cy="268" r="6" fill="var(--violet)" />
+            <text x="330" y="298" fill="var(--text)" font-weight="700">get_metrics</text>
+            <text x="330" y="320" fill="var(--muted)" font-size="12.5">異常開始 10:32 を特定</text>
+
+            <circle cx="540" cy="268" r="6" fill="var(--violet)" />
+            <text x="540" y="298" fill="var(--text)" font-weight="700">get_deploy_history</text>
+            <text x="540" y="320" fill="var(--muted)" font-size="12.5">直前 10:31 の変更を発見</text>
+
+            <circle cx="735" cy="268" r="6" fill="var(--violet)" />
+            <text x="735" y="298" fill="var(--text)" font-weight="700">search_logs</text>
+            <text x="735" y="320" fill="var(--muted)" font-size="12.5">設定キー不足のエラーを確認</text>
+
+            <circle cx="930" cy="268" r="6" fill="var(--red)" />
+            <text x="930" y="298" fill="var(--text)" font-weight="700">rollback_revision</text>
+            <text x="930" y="320" fill="var(--muted)" font-size="12.5">根拠を明示して実行</text>
+
+            <circle cx="1085" cy="268" r="6" fill="var(--teal)" />
+            <text x="1085" y="298" fill="var(--teal)" font-weight="700">check_health</text>
+            <text x="1085" y="320" fill="var(--muted)" font-size="12.5">復旧を検証</text>
+          </g>
+          <text x="40" y="238" font-size="13" fill="var(--muted)" letter-spacing="0.2em" font-weight="700">エージェントの行動(実行順)</text>
+        </g>
+      </svg>
+      <p class="lead" style="margin-top: 0.4em; max-width: 100%; font-size: 1.02em;">
+        原因は 1 つのツールでは分からない。<strong>メトリクスの異常開始時刻 × デプロイ時刻 × ログの内容</strong>を関連付けたときに初めて「直前のデプロイが原因」と言える情報設計にしている。
+      </p>
+    </div>
+    <div class="foot"><span>Resilience Arena</span><span class="pageno">04</span></div>
+  </div>
+</section>
+
+<!-- 5. 構成 -->
+<section class="slide">
+  <div class="stage">
+    <div class="kicker"><span class="no">04</span>AIエージェントとツールの構成</div>
+    <h1>判断はモデルに、<em>安全と判定はサーバーに。</em></h1>
+    <div class="grow" style="margin-top: 2em;">
+      <svg class="fig" viewBox="0 0 1136 330" aria-label="システム構成図">
+        <!-- ブラウザ -->
+        <rect x="8" y="90" width="200" height="140" fill="var(--panel)" stroke="var(--line)" stroke-width="2" />
+        <text x="108" y="130" text-anchor="middle" font-size="18" font-weight="800" fill="var(--text)">ブラウザ</text>
+        <text x="108" y="160" text-anchor="middle" font-size="13.5" fill="var(--muted)">SmartHR UI</text>
+        <text x="108" y="182" text-anchor="middle" font-size="13.5" fill="var(--muted)">1画面リアルタイム表示</text>
+
+        <line x1="208" y1="160" x2="296" y2="160" stroke="var(--muted)" stroke-width="2" />
+        <polygon points="216,154 208,160 216,166" fill="var(--muted)" />
+        <text x="252" y="146" text-anchor="middle" font-size="13" font-weight="700" fill="var(--teal)">SSE</text>
+
+        <!-- Cloud Run -->
+        <rect x="296" y="16" width="560" height="298" fill="none" stroke="var(--teal)" stroke-width="2" />
+        <text x="316" y="46" font-size="15" font-weight="800" fill="var(--teal)" letter-spacing="0.15em">CLOUD RUN(単一サービス)</text>
+
+        <rect x="316" y="64" width="520" height="64" fill="var(--panel)" stroke="var(--line)" stroke-width="2" />
+        <text x="576" y="92" text-anchor="middle" font-size="15.5" font-weight="700" fill="var(--text)">FastAPI オーケストレーター</text>
+        <text x="576" y="114" text-anchor="middle" font-size="12.5" fill="var(--muted)">処理段階と最終判定をイベント列とエンジン実状態から導出(モデルの自己申告に依存しない)</text>
+
+        <rect x="316" y="152" width="244" height="140" fill="var(--panel)" stroke="var(--violet)" stroke-width="2" />
+        <text x="438" y="182" text-anchor="middle" font-size="15.5" font-weight="800" fill="var(--text)">ADK エージェント</text>
+        <text x="438" y="206" text-anchor="middle" font-size="12.5" fill="var(--muted)">単一 LlmAgent+5ツール</text>
+        <text x="438" y="232" text-anchor="middle" font-size="12.5" fill="var(--violet)" font-weight="700">before_tool_callback</text>
+        <text x="438" y="252" text-anchor="middle" font-size="12.5" fill="var(--muted)">根拠のない復旧操作を遮断</text>
+        <text x="438" y="272" text-anchor="middle" font-size="12.5" fill="var(--muted)">許可リスト外の操作を拒否</text>
+
+        <line x1="560" y1="222" x2="592" y2="222" stroke="var(--muted)" stroke-width="2" />
+        <polygon points="584,216 592,222 584,228" fill="var(--muted)" />
+
+        <rect x="592" y="152" width="244" height="140" fill="var(--panel)" stroke="var(--line)" stroke-width="2" />
+        <text x="714" y="182" text-anchor="middle" font-size="15.5" font-weight="800" fill="var(--text)">シミュレーション環境</text>
+        <text x="714" y="208" text-anchor="middle" font-size="12.5" fill="var(--muted)">LB → 決済サービス → DB</text>
+        <text x="714" y="230" text-anchor="middle" font-size="12.5" fill="var(--muted)">メトリクス・ログ・デプロイ履歴</text>
+        <text x="714" y="256" text-anchor="middle" font-size="12.5" fill="var(--teal)" font-weight="700">決定論的(固定シード)</text>
+        <text x="714" y="276" text-anchor="middle" font-size="12.5" fill="var(--muted)">正しい操作でだけ復旧する</text>
+
+        <!-- Gemini -->
+        <line x1="856" y1="165" x2="936" y2="165" stroke="var(--muted)" stroke-width="2" />
+        <polygon points="928,159 936,165 928,171" fill="var(--muted)" />
+        <rect x="936" y="110" width="192" height="110" fill="var(--panel)" stroke="var(--line)" stroke-width="2" />
+        <text x="1032" y="148" text-anchor="middle" font-size="17" font-weight="800" fill="var(--text)">Gemini</text>
+        <text x="1032" y="172" text-anchor="middle" font-size="13" fill="var(--muted)">gemini-3.5-flash</text>
+        <text x="1032" y="194" text-anchor="middle" font-size="13" fill="var(--muted)">Vertex AI・SA 認証</text>
+      </svg>
+      <p class="lead" style="max-width: 100%; margin-top: 1.3em;">
+        復旧の成否は、モデルの発言ではなく<strong>シミュレーション環境の実状態</strong>で判定する。誤った対象へのロールバックは受理されず、検証を省略した実行は「復旧失敗」になる。
+      </p>
+    </div>
+    <div class="foot"><span>Resilience Arena</span><span class="pageno">05</span></div>
+  </div>
+</section>
+
+<!-- 6. Google 技術 -->
+<section class="slide">
+  <div class="stage">
+    <div class="kicker"><span class="no">05</span>Google 技術を使う理由</div>
+    <h1>3 つとも、<em>置き換えの利かない役割</em>がある。</h1>
+    <div class="cols cols-3 grow">
+      <div class="col">
+        <h3>Gemini</h3>
+        <p><strong>実行時のすべての判断</strong>を担う。次に使うツール、原因の推定、復旧操作の選択は毎回モデルが決めており、台本の再生ではない。flash の低レイテンシが 20 秒級のライブデモを成立させる。</p>
+      </div>
+      <div class="col violet">
+        <h3>Agent Development Kit</h3>
+        <p>ツール実行・セッション・イベントストリームの管理を担う。<strong>before_tool_callback</strong> がモデルの外側で安全規則を強制し、イベント列がそのまま UI の「実行過程の可視化」になる。</p>
+      </div>
+      <div class="col">
+        <h3>Cloud Run</h3>
+        <p>審査員が URL を開くだけで使える公開環境。単一サービスに UI・API・エージェントを同居させ、<strong>SSE ストリーミング</strong>で進行を配信する。サービスアカウント認証で秘密情報を持たない。</p>
+      </div>
+    </div>
+    <div class="foot"><span>Resilience Arena</span><span class="pageno">06</span></div>
+  </div>
+</section>
+
+<!-- 7. 既存手段との違い -->
+<section class="slide">
+  <div class="stage">
+    <div class="kicker"><span class="no">06</span>既存手段との違い</div>
+    <h1>「説明する AI」ではなく、<br /><em>行動して検証される AI。</em></h1>
+    <div class="cmp-wrap">
+      <div class="cmp">
+        <div class="h"></div>
+        <div class="h them">ログ要約 AI・障害チャットボット</div>
+        <div class="h ours">Resilience Arena</div>
+
+        <div class="k">評価対象</div>
+        <div class="them">最終的な回答文の正しさ</div>
+        <div class="ours"><strong>実行過程</strong> — ツール選択・順序・検証の有無まで</div>
+
+        <div class="k">動作</div>
+        <div class="them">ログを渡すと説明が返る</div>
+        <div class="ours">自らツールを選び、<strong>復旧操作を実行</strong>する</div>
+
+        <div class="k">安全性</div>
+        <div class="them">出力テキストの注意書きに依存</div>
+        <div class="ours">根拠のない操作を<strong>サーバー側で遮断</strong>し、件数を表示</div>
+
+        <div class="k">成否判定</div>
+        <div class="them">モデルの自己申告</div>
+        <div class="ours">環境の<strong>実状態</strong>で判定。検証省略は失敗扱い</div>
+      </div>
+      <div class="cmp-hl" aria-hidden="true"></div>
+    </div>
+    <div class="foot"><span>Resilience Arena</span><span class="pageno">07</span></div>
+  </div>
+</section>
+
+<!-- 8. 実運用への発展 -->
+<section class="slide">
+  <div class="stage">
+    <div class="kicker"><span class="no">07</span>実運用へ発展させる場合の方向性</div>
+    <h1>シミュレーターは、<em>導入前の関門</em>になる。</h1>
+    <div class="road grow">
+      <div class="phase now">
+        <div class="tag">現在</div>
+        <h3>安全な評価環境</h3>
+        <p>決定論的なシミュレーションで、エージェントの調査手順・操作の根拠・検証の有無を繰り返し確認する。ツールと UI はこのまま使える。</p>
+      </div>
+      <div class="road-arrow">→</div>
+      <div class="phase">
+        <div class="tag">次段階</div>
+        <h3>実データの読み取り</h3>
+        <p>メトリクス・ログ・デプロイ履歴のツールを Cloud Monitoring / Cloud Logging / Cloud Run Admin API の読み取り専用実装に差し替え、実障害の調査支援に使う。</p>
+      </div>
+      <div class="road-arrow">→</div>
+      <div class="phase">
+        <div class="tag">将来</div>
+        <h3>承認付きの実操作</h3>
+        <p>シミュレーターで合格したエージェントにだけ、人の承認を挟んだ復旧操作を許可する。実行過程のスコアリングが導入判断の基準になる。</p>
+      </div>
+    </div>
+    <div class="foot"><span>Resilience Arena</span><span class="pageno">08</span></div>
+  </div>
+</section>
+
+<!-- 9. クロージング -->
+<section class="slide">
+  <div class="stage close-stage">
+    <div class="kicker">DEMO</div>
+    <div class="close-h">審査員のブラウザで、<br /><em>いま動きます。</em></div>
+    <div class="close-url">resilience-arena-qxieomr5ba-an.a.run.app</div>
+    <p class="close-note">
+      ログイン不要・初期設定不要。「デモを開始」を押すと、Gemini が調査し、ロールバックし、検証するまでを約 20 秒でご覧いただけます。<br />
+      同じシナリオを何度でも再実行できます。
+    </p>
+    <div class="foot"><span>Resilience Arena — Google AI Dojo 2026</span><span class="pageno">09</span></div>
+  </div>
+</section>
+
+<script>
+  // 矢印キー・スペース・PageUp/Down でスライド送り(プレゼン用の最小限の操作のみ)
+  const slides = [...document.querySelectorAll('.slide')];
+  const current = () => Math.round(window.scrollY / window.innerHeight);
+  const go = (i) => slides[Math.max(0, Math.min(slides.length - 1, i))]
+    .scrollIntoView({ behavior: 'smooth' });
+  addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(current() + 1); }
+    if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); go(current() - 1); }
+    if (e.key === 'Home') { e.preventDefault(); go(0); }
+    if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+  });
+</script>
+</body>
+</html>
